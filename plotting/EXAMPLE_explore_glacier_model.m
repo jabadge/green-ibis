@@ -146,6 +146,27 @@ N_est = CN./C_est;
 %estimated using only the part of the time series that is of interest
 P_water_est = water_pressure_from_CN(CN,P_ice,C_est);
 
+% volume above floatation change
+vol = [md.results.TransientSolution(:).IceVolumeAboveFloatationScaled];
+
+% mass change
+mass = vol2mass(vol,rho_ice);
+mass_anom = mass - interp1(t,mass,t_start);
+
+% rate of mass change
+[t_rate,rate]=mass2rate(t,mass);
+
+% surface mass balance
+smb_rate = [md.results.TransientSolution(:).TotalSmbScaled];
+[t_smb_mass,smb_mass] = rate2mass(t(t_start_pos:t_end_pos),...
+                                          smb_rate(t_start_pos:t_end_pos));
+smb_mass_start = interp1(t_smb_mass,smb_mass,t_start);
+smb_mass = smb_mass - smb_mass_start;
+
+% discharge
+D_mass = interp1(t_smb_mass,smb_mass,t) - mass_anom;
+[t_D_rate,D_rate] = mass2rate(t,D_mass);
+
 % load a model with only the seasonal frontal forcing if requested
 % it will have the same friction coefficeint as your model of interest
 % specified with an "_f" at the end of the variable
@@ -154,7 +175,21 @@ if load_frontal_model
     modelFront_name = ['Model_NW_TransientInversionRun_indep0_2007_2022_fric' num2str(fric) '_catchment' num2str(catchment) '.mat'];
     mdf = loadmodel([root modelFront_name]);
     t_f = [mdf.results.TransientSolution(:).time];
+    t_start_pos_f = find(abs(t_f-t_start)==min(abs(t_f-t_start)));
+    t_end_pos_f = find(abs(t_f-t_end)==min(abs(t_f-t_end)));
     v_f = [mdf.results.TransientSolution(:).Vel];
+    H_f = [mdf.results.TransientSolution(:).Thickness];
+    vol_f = [mdf.results.TransientSolution(:).IceVolumeAboveFloatationScaled];
+    mass_f = vol2mass(vol_f,rho_ice);
+    mass_anom_f = mass_f - interp1(t_f,mass_f,t_start);
+    [t_rate_f,rate_f]=mass2rate(t_f,mass_f);
+    smb_rate_f = [mdf.results.TransientSolution(:).TotalSmbScaled];
+    [t_smb_mass_f,smb_mass_f] = rate2mass(t_f(t_start_pos_f:t_end_pos_f),...
+                                    smb_rate_f(t_start_pos_f:t_end_pos_f));
+    smb_mass_start_f = interp1(t_smb_mass_f,smb_mass_f,t_start);
+    smb_mass_f = smb_mass_f - smb_mass_start_f;
+    D_mass_f = interp1(t_smb_mass_f,smb_mass_f,t_f) - mass_anom_f;
+    [t_D_rate_f,D_rate_f] = mass2rate(t_f,D_mass_f);
 end
 
 %% INITIAL SPATIAL PLOT
@@ -182,16 +217,30 @@ hold on;
 plot(X(pos),Y(pos),'ko','MarkerSize',10,'linewidth',2);
 hold off;
 
-% plot velocity time series for 'pos' location
+%% plot velocity time series for 'pos' location
 figure(2);
+if load_frontal_model
+    subplot(1,2,1);
+end
 plot(t,v(pos,:),'linewidth',2);
 hold on;
 plot(t_obs,v_obs(pos,:),'ko','linewidth',2);
 if load_frontal_model
     plot(t_f,v_f(pos,:),'--','linewidth',2);
     legend({'Full seasonal', 'Obs', 'Frontal seasonal'},'Location','northwest');
+    subplot(1,2,2);
+    v_interp_f = interp1(t_f,v_f(pos,:),t);
+    plot(t,v(pos,:)-v_interp_f,'k-','linewidth',2);
+    xlim([t_start,t_end]);
+    xlabel('year');
+    ylabel('velocity difference (m/yr)');
+    title('Velocity Difference')
+    legend('Full-Frontal','Location','northwest');
 else
     legend({'Frontal seasonal', 'Obs'},'Location','northwest');
+end
+if load_frontal_model
+    subplot(1,2,1);
 end
 xlim([t_start,t_end]);
 xlabel('year');
@@ -199,19 +248,49 @@ ylabel('velocity (m/yr)');
 title('Velocity')
 hold off;
 
-% plot taub spatial
+%% plot velocity time series for 'pos' location
+figure(3);
+if load_frontal_model
+    subplot(1,2,1);
+end
+plot(t,H(pos,:),'linewidth',2);
+hold on;
+if load_frontal_model
+    plot(t_f,H_f(pos,:),'--','linewidth',2);
+    legend({'Full seasonal', 'Frontal seasonal'},'Location','northwest');
+    subplot(1,2,2);
+    H_interp_f = interp1(t_f,H_f(pos,:),t);
+    plot(t,H(pos,:)-H_interp_f,'k-','linewidth',2);
+    xlim([t_start,t_end]);
+    xlabel('year');
+    ylabel('thickness difference (m)');
+    title('Thickness Difference')
+    legend('Full-Frontal','Location','northwest');
+else
+    legend({'Frontal seasonal'},'Location','northwest');
+end
+if load_frontal_model
+    subplot(1,2,1);
+end
+xlim([t_start,t_end]);
+xlabel('year');
+ylabel('thickness (m)');
+title('Thickness')
+hold off;
+
+%% plot taub spatial
 plotmodel(md,'data',taub(:,t_end_pos)*(1e-6),'mask',mask(:,t_end_pos), ...
              'xlim#all',xlims, ...
              'ylim#all',ylims,...
              'caxis#all',[0,.2],...
              'title','Basal Shear Stress (MPa)',...
-             'figure',3);
+             'figure',4);
 hold on;
 plot(X(pos),Y(pos),'ko','MarkerSize',10,'linewidth',2);
 hold off;
 
 % plot components of taub and taud for 'pos' location
-figure(4);
+figure(5);
 plot(t,taub(pos,:)*(1e-6),'k-','linewidth',2);
 hold on;
 plot(t,taud(pos,:)*(1e-6),'k--','linewidth',2);
@@ -242,7 +321,7 @@ plotmodel(md,'data',taub(:,t_start_pos)-taud(:,t_start_pos),...
              'title#2',['tau_b - tau_d: ' num2str(t_peak)],...
              'title#3',['tau_b - tau_d: ' num2str(t_trough)],...
              'title#4',['tau_b - tau_d: ' num2str(t_end)],...
-             'figure',5);
+             'figure',6);
 hold on;
 plot(X(pos),Y(pos),'ko','MarkerSize',10,'linewidth',2);
 axs = findobj(gcf,'type','axes');
@@ -252,7 +331,7 @@ end
 hold off;
 
 % plot water and ice pressures for 'pos' location
-figure(6); 
+figure(7); 
 plot(t,P_water_est(pos,:),'linewidth',2); 
 hold on; 
 plot(t,P_ice(pos,:),'linewidth',2); 
@@ -273,11 +352,193 @@ plotmodel(md,'data',P_water_est(:,t_peak_pos)-P_water_est(:,t_start_pos),...
              'ylim#all',ylims,'xlim#all',xlims,...
              'caxis#all',[-5e6,5e6],...
              'title','Estimated water pressure change (Pa)',...
-             'figure',7);
+             'figure',8);
 hold on;
 plot(X(pos),Y(pos),'ko','MarkerSize',10,'linewidth',2);
 axs = findobj(gcf,'type','axes');
 for ii = 2:length(axs)
     copyobj(axs(1).Children(1),axs(ii))
 end
+hold off;
+
+
+%% Plot mass and mass rate change for whole domain
+% Mass change
+figure(9); 
+if load_frontal_model
+    subplot(1,2,1);
+end
+plot(t,mass-mass(t_start_pos),'linewidth',2); 
+hold on; 
+if load_frontal_model
+    plot(t_f,mass_f-mass_f(t_start_pos_f),'--','linewidth',2);
+    legend({'Full seasonal', 'Frontal seasonal'},'Location','northeast');
+    subplot(1,2,2);
+    mass_interp_f = interp1(t_f,mass_f,t,'linear');
+    plot(t,mass-mass_interp_f,'k-','linewidth',2);
+    legend({'Full-Frontal'},'Location','northwest');
+    xlabel('year');
+    ylabel('mass (Gt)');
+    xlim([t_start,t_end]);
+    title('Mass Difference');
+else
+    legend({'Full seasonal'},'Location','northeast');
+end
+if load_frontal_model
+    subplot(1,2,1);
+end
+xlabel('year');
+ylabel('mass (Gt)');
+xlim([t_start,t_end]);
+title('Mass Change');
+hold off;
+
+% Rate of mass change
+figure(10); 
+if load_frontal_model
+    subplot(1,2,1);
+end
+plot(t_rate,rate,'linewidth',2); 
+hold on; 
+if load_frontal_model
+    plot(t_rate_f,rate_f,'--','linewidth',2);
+    legend({'Full seasonal', 'Frontal seasonal'},'Location','northeast');
+    subplot(1,2,2);
+    rate_interp_f = interp1(t_rate_f,rate_f,t_rate,'linear');
+    plot(t_rate,rate-rate_interp_f,'k-','linewidth',2);
+    legend({'Full-Frontal'},'Location','northwest');
+    xlabel('year');
+    ylabel('mass change rate (Gt/year)');
+    xlim([t_start,t_end]);
+    title('Mass Change Rate');
+else
+    legend({'Full seasonal'},'Location','northeast');
+end
+if load_frontal_model
+    subplot(1,2,1);
+end
+xlabel('year');
+ylabel('mass change rate (Gt/year)');
+xlim([t_start,t_end]);
+title('Mass Change Rate');
+hold off;
+
+% SMB rate change
+figure(11); 
+if load_frontal_model
+    subplot(1,2,1);
+end
+plot(t,smb_rate,'linewidth',2); 
+hold on; 
+if load_frontal_model
+    plot(t_f,smb_rate_f,'--','linewidth',2);
+    legend({'Full seasonal', 'Frontal seasonal'},'Location','northeast');
+    subplot(1,2,2);
+    smb_rate_interp_f = interp1(t_f,smb_rate_f,t,'linear');
+    plot(t,smb_rate-smb_rate_interp_f,'k-','linewidth',2);
+    legend({'Full-Frontal'},'Location','northwest');
+    xlabel('year');
+    ylabel('SMB rate (Gt/yr)');
+    xlim([t_start,t_end]);
+    title('SMB Rate Difference');
+else
+    legend({'Full seasonal'},'Location','northeast');
+end
+if load_frontal_model
+    subplot(1,2,1);
+end
+xlabel('year');
+ylabel('SMB rate (Gt/yr)');
+xlim([t_start,t_end]);
+title('SMB Rate Change');
+hold off;
+
+% SMB change
+figure(12); 
+if load_frontal_model
+    subplot(1,2,1);
+end
+plot(t_smb_mass,smb_mass,'linewidth',2); 
+hold on; 
+if load_frontal_model
+    plot(t_smb_mass_f,smb_mass_f,'--','linewidth',2);
+    legend({'Full seasonal', 'Frontal seasonal'},'Location','northeast');
+    subplot(1,2,2);
+    smb_mass_interp_f = interp1(t_smb_mass_f,smb_mass_f,t_smb_mass,'linear');
+    plot(t_smb_mass,smb_mass-smb_mass_interp_f,'k-','linewidth',2);
+    legend({'Full-Frontal'},'Location','northwest');
+    xlabel('year');
+    ylabel('SMB (Gt)');
+    xlim([t_start,t_end]);
+    title('SMB Difference');
+else
+    legend({'Full seasonal'},'Location','northeast');
+end
+if load_frontal_model
+    subplot(1,2,1);
+end
+xlabel('year');
+ylabel('SMB (Gt)');
+xlim([t_start,t_end]);
+title('SMB Change');
+hold off;
+
+% Discharge change
+figure(13); 
+if load_frontal_model
+    subplot(1,2,1);
+end
+plot(t,D_mass,'linewidth',2); 
+hold on; 
+if load_frontal_model
+    plot(t_f,D_mass_f,'--','linewidth',2);
+    legend({'Full seasonal', 'Frontal seasonal'},'Location','northwest');
+    subplot(1,2,2);
+    D_mass_interp_f = interp1(t_f,D_mass_f,t);
+    plot(t,D_mass-D_mass_interp_f,'k-','linewidth',2);
+    legend({'Full-Frontal'},'Location','northwest');
+    xlabel('year');
+    ylabel('mass (Gt)');
+    xlim([t_start,t_end]);
+    title('Discharge Difference');
+else
+    legend({'Full seasonal'},'Location','northwest');
+end
+if load_frontal_model
+    subplot(1,2,1);
+end
+xlabel('year');
+ylabel('mass (Gt)');
+xlim([t_start,t_end]);
+title('Ice Discharge Change');
+hold off;
+
+% Discharge rate change
+figure(14); 
+if load_frontal_model
+    subplot(1,2,1);
+end
+plot(t_D_rate,D_rate,'linewidth',2); 
+hold on; 
+if load_frontal_model
+    plot(t_D_rate_f,D_rate_f,'--','linewidth',2);
+    legend({'Full seasonal', 'Frontal seasonal'},'Location','northeast');
+    subplot(1,2,2);
+    D_rate_interp_f = interp1(t_D_rate_f,D_rate_f,t_D_rate);
+    plot(t_D_rate,D_rate-D_rate_interp_f,'k-','linewidth',2);
+    legend({'Full-Frontal'},'Location','northwest');
+    xlabel('year');
+    ylabel('discharge change rate (Gt/year)');
+    xlim([t_start,t_end]);
+    title('Discharge Change Rate');
+else
+    legend({'Full seasonal'},'Location','northeast');
+end
+if load_frontal_model
+    subplot(1,2,1);
+end
+xlabel('year');
+ylabel('discharge change rate (Gt/year)');
+xlim([t_start,t_end]);
+title('Discharge Change Rate');
 hold off;
