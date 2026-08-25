@@ -1,4 +1,51 @@
-# Data files #
-#==================
+# --- Data & model outputs --- 
 *.mat
 *.nc
+*.tif
+*.tiff
+
+# --- MATLAB junk ---
+*.asv          # autosave files (found in experimental_scripts/)
+*.m~
+slprj/
+codegen/
+
+# --- Python ---
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+*.egg-info/
+.venv/
+venv/
+env/
+
+# --- Jupyter ---
+.ipynb_checkpoints/
+
+# --- Dataset-checker cache (regenerated on every run) ---
+# adjust the path to wherever these land, e.g. data_checks/state/ or json/
+data_tools/check_version_updates/*_state.json
+
+# --- Generated analysis outputs (regenerable from source data + scripts) ---
+analyses/**/*_exports/
+pdfs/
+outputs/
+results/
+figures/
+
+# --- Large scratch model runs ---
+temp_models/
+Models/
+
+# --- Office lock/temp files ---
+~$*.docx
+~$*.doc
+~$*.xlsx
+
+# --- OS / editor junk ---
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
