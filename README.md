@@ -1,6 +1,8 @@
 # Green IBIS: Greenland Ice Bed from Ice Surface
 Inferring seasonal timescale basal processes from ice surface observations and ice-flow models for Greenland outlet glaciers.
 
+## Note: This repository is actively being built and will undergo many substantial changes.
+
 ## Repository Structure
 This repository combines MATLAB and Python/Jupyter Notebook scripts to handle observations and models for all parts of the Green IBIS project. 
 
