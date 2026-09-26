@@ -1,21 +1,42 @@
-# --- Data & model outputs --- 
+# --- Data & model outputs (large; live outside the repo) ---
 *.mat
 *.nc
 *.tif
 *.tiff
+*.h5
+*.hdf5
+# ROI files (save_roi writes .mat/.json/.exp into data/ by default) stay local
+data/*.exp
+data/*.json
+
+# --- Shapefile archives (Felikson flowlines, Black & Joughin termini) ---
+*.shp
+*.shx
+*.dbf
+*.prj
+*.sbn
+*.sbx
+*.cpg
 
 # --- MATLAB junk ---
-*.asv          # autosave files (found in experimental_scripts/)
+# autosave files (found in experimental_scripts/)
+*.asv
 *.m~
 slprj/
 codegen/
+*.mex*
 
 # --- Python ---
 __pycache__/
 *.pyc
 *.pyo
 .pytest_cache/
+.ruff_cache/
+.mypy_cache/
 *.egg-info/
+.eggs/
+build/
+dist/
 .venv/
 venv/
 env/
@@ -25,14 +46,25 @@ env/
 
 # --- Dataset-checker cache (regenerated on every run) ---
 # adjust the path to wherever these land, e.g. data_checks/state/ or json/
-data_tools/check_version_updates/*_state.json
+src/data_tools/*_state.json
 
 # --- Generated analysis outputs (regenerable from source data + scripts) ---
-analyses/**/*_exports/
+*_exports/
 pdfs/
 outputs/
 results/
 figures/
+figs/
+exported/
+
+# --- Local machine configuration ---
+# Data paths live in ~/.config/green-ibis/paths.json; a local copy checked into
+# the repo would defeat the point of making them configurable.
+paths.json
+.env
+
+# Claude Code per-machine settings (the shared .claude/settings.json is kept)
+**/.claude/settings.local.json
 
 # --- Large scratch model runs ---
 temp_models/

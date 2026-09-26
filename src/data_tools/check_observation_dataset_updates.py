@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-check_greenibis_dataset_updates.py
+check_observation_dataset_updates.py
 
 Wrapper that checks external observational datasets referenced by
 runme_greenibis.m for updates, by driving the two dataset-specific checkers

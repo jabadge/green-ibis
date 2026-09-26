@@ -1,0 +1,27 @@
+[project]
+name = "green-ibis"
+version = "0.1.0"
+description = "Green IBIS: Greenland Ice Bed from Ice Surface — models, observations, and model/obs comparison tools"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "numpy>=1.24",
+    "scipy>=1.10",
+    "h5py>=3.8",
+    "xarray>=2023.1",
+    "matplotlib>=3.7",
+    "pandas>=2.0",
+]
+
+[project.optional-dependencies]
+# interactive ROI drawing + running the notebooks
+interactive = ["ipympl>=0.9", "jupyterlab>=4.0"]
+# building flowline inputs from shapefiles (src/flowline/flowline_shp.py)
+shapefile = ["geopandas>=0.14", "shapely>=2.0", "pyogrio>=0.7"]
+# lazy / cloud reads (src/data_io/obs_lazy.py: remote COGs, zarr, HTTP netCDF)
+lazy = ["dask>=2023.1", "rioxarray>=0.15", "zarr>=2.14", "h5netcdf>=1.1", "fsspec>=2023.1"]
+
+[tool.uv]
+# An "app" project: uv pins the environment in uv.lock but does not build or
+# install src/ as a package. Import with PYTHONPATH=src (see README).
+package = false
