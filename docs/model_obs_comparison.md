@@ -93,6 +93,7 @@ assuming a field exists on `project_config()`.
 | `obs_netcdf_dir` | `GREENIBIS_OBS_NETCDF_DIR` | gridded observed-velocity netCDF files |
 | `flowline_shp_dir` | `GREENIBIS_FLOWLINE_SHP_DIR` | Felikson per-glacier flowline shapefiles |
 | `termini_shp` | `GREENIBIS_TERMINI_SHP` | Black & Joughin traced-terminus shapefile |
+| `icefronts_nc` | `GREENIBIS_ICEFRONTS_NC` | NSIDC-0793 ice fronts/catchments netCDF (used by the shear-margin workflow) |
 | `roi_dir` | `GREENIBIS_ROI_DIR` | where ROIs are saved (default: the repo's `data/`, not tracked by git) |
 
 The datasets are not in this repository, because they are large and archived externally.

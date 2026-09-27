@@ -51,7 +51,7 @@ model_before_path    = fullfile(model_folder, [model_prefix domain '_Friction.ma
 model_after_path  = fullfile(model_folder, [model_prefix domain '_Rheology.mat']);
 
 % Same external data used by runme_snapshot.m to build catchment boundaries
-nsidc_icefronts_netcdf = '/home/badgeley/ModelData/Greenland/IceFrontsGreene/NSIDC-0793_19720915-20220215_V01.0.nc';
+nsidc_icefronts_netcdf = data_path('icefronts_nc');   % NSIDC-0793 netCDF (run setup_paths first)
 exp_folder              = './Exp';
 contour_resolution_m    = 200; % simplification tolerance, same as runme_snapshot.m
 

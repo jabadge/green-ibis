@@ -25,7 +25,7 @@ function cfg = project_config(varargin)
 %      .grid_res  (double)  default regular-grid spacing [m]
 %      .obs_bands (cellstr) component order in the Sentinel-type netCDF velocity var
 %      plus one field per CONFIGURED path (issm_dir, model_dir, obs_flowline_dir,
-%      obs_netcdf_dir, flowline_shp_dir, termini_shp, roi_dir) — absent when a
+%      obs_netcdf_dir, flowline_shp_dir, termini_shp, icefronts_nc, roi_dir) — absent when a
 %      path has not been configured yet.
 %
 %   See also DATA_PATH, CONFIGURE_PATHS, PATH_SETTINGS, SETUP_PATHS.

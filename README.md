@@ -58,7 +58,7 @@ Notebooks and scripts in `notebooks/`, `examples/` and `tests/` add `src/` to `s
 Nothing is hard-coded to one machine. MATLAB (`data_path`, `configure_paths`) and Python (`config.config`) share the same data-path settings. Each path is looked up in this order:
 
 1. a session override (`configure_paths(name, value)` / `configure(name=value)`)
-2. an environment variable: `ISSM_DIR`, `GREENIBIS_MODEL_DIR`, `GREENIBIS_OBS_FLOWLINE_DIR`, `GREENIBIS_OBS_NETCDF_DIR`, `GREENIBIS_FLOWLINE_SHP_DIR`, `GREENIBIS_TERMINI_SHP`, `GREENIBIS_ROI_DIR`
+2. an environment variable: `ISSM_DIR`, `GREENIBIS_MODEL_DIR`, `GREENIBIS_OBS_FLOWLINE_DIR`, `GREENIBIS_OBS_NETCDF_DIR`, `GREENIBIS_FLOWLINE_SHP_DIR`, `GREENIBIS_TERMINI_SHP`, `GREENIBIS_ICEFRONTS_NC`, `GREENIBIS_ROI_DIR`
 3. the shared config file `~/.config/green-ibis/paths.json` (override its location with `GREENIBIS_CONFIG`)
 4. an interactive prompt, whose answer is saved to the config file
 

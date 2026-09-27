@@ -1,6 +1,6 @@
 % Compare taub estimates from FrictionAlpha2 and equations
 
-root='/Users/badgeley/projects/seasonality/Cryo23';
+root=data_path('model_dir');   % configured model folder (run setup_paths first)
 file='Model_NW_TransientInversionRun_indep5_2018.5_2020.1_fric3_catchment36_reg100vel200prior0rhe0';
 
 md=loadmodel(fullfile(root,file));

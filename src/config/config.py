@@ -57,6 +57,10 @@ PATH_SETTINGS: dict[str, tuple[str, str, str]] = {
         "file", "GREENIBIS_TERMINI_SHP",
         "Black & Joughin traced-terminus shapefile (glacier_termini_v01.0.shp)",
     ),
+    "icefronts_nc": (
+        "file", "GREENIBIS_ICEFRONTS_NC",
+        "NSIDC-0793 Greenland ice fronts/catchments netCDF (NSIDC-0793_19720915-20220215_V01.0.nc)",
+    ),
     "roi_dir": (
         "dir", "GREENIBIS_ROI_DIR",
         "folder to save selected ROIs in (created if missing)",

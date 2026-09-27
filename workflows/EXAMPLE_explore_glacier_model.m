@@ -1,7 +1,7 @@
 % OPTIONS - change as desired
 
 % Decide which model to load
-root = '/Users/badgeley/projects/seasonality/Cryo23/';
+root = data_path('model_dir');   % configured model folder (run setup_paths first)
 
 fric = 3;
 indep = 5;
@@ -50,7 +50,7 @@ end
 %% LOAD MODELS and VARIABLES
 
 % load main model
-md = loadmodel([root model_name]);
+md = loadmodel(fullfile(root, model_name));
 
 % Extract observations from model
 [t_obs,v_obs] = extract_obs_from_model(md);
@@ -173,7 +173,7 @@ D_mass = interp1(t_smb_mass,smb_mass,t) - mass_anom;
 % NOTE: not all variables are loaded, but you can change that
 if load_frontal_model
     modelFront_name = ['Model_NW_TransientInversionRun_indep0_2007_2022_fric' num2str(fric) '_catchment' num2str(catchment) '.mat'];
-    mdf = loadmodel([root modelFront_name]);
+    mdf = loadmodel(fullfile(root, modelFront_name));
     t_f = [mdf.results.TransientSolution(:).time];
     t_start_pos_f = find(abs(t_f-t_start)==min(abs(t_f-t_start)));
     t_end_pos_f = find(abs(t_f-t_end)==min(abs(t_f-t_end)));
