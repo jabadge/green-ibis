@@ -121,7 +121,7 @@ def _component_names(h: h5py.File) -> list[str]:
     ``CONFIG.obs_bands`` warns, because guessing the order silently mislabels
     every band when a file does not use it: the nisardev order is
     ``(vx, vy, vv, ex, ey, ev, dT)``, not ``(vv, vx, vy, ex, ey, dT)``. For
-    those files use :func:`moc_py.obs_nsidc.load_nsidc_netcdf`.
+    those files use :func:`data_io.obs_nsidc.load_nsidc_netcdf`.
     """
     for key in ("component", "band"):
         if key in h:
@@ -133,7 +133,7 @@ def _component_names(h: h5py.File) -> list[str]:
     warnings.warn(
         f'No "component" or "band" labels in {h.filename}; assuming the '
         f"configured order {tuple(CONFIG.obs_bands)}. If the file is a "
-        "GrIMP/NSIDC subset, read it with moc_py.obs_nsidc.load_nsidc_netcdf "
+        "GrIMP/NSIDC subset, read it with data_io.obs_nsidc.load_nsidc_netcdf "
         "instead — its band order differs and would be mislabelled here.",
         stacklevel=3,
     )
