@@ -1,5 +1,5 @@
 version = 1
-revision = 3
+revision = 5
 requires-python = ">=3.10"
 resolution-markers = [
     "python_full_version >= '3.14' and sys_platform == 'win32'",
@@ -1182,6 +1182,10 @@ lazy = [
     { name = "zarr", version = "3.1.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.11.*'" },
     { name = "zarr", version = "3.4.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
 ]
+nsidc = [
+    { name = "dask" },
+    { name = "h5netcdf" },
+]
 shapefile = [
     { name = "geopandas" },
     { name = "pyogrio" },
@@ -1191,9 +1195,11 @@ shapefile = [
 [package.metadata]
 requires-dist = [
     { name = "dask", marker = "extra == 'lazy'", specifier = ">=2023.1" },
+    { name = "dask", marker = "extra == 'nsidc'", specifier = ">=2023.1" },
     { name = "fsspec", marker = "extra == 'lazy'", specifier = ">=2023.1" },
     { name = "geopandas", marker = "extra == 'shapefile'", specifier = ">=0.14" },
     { name = "h5netcdf", marker = "extra == 'lazy'", specifier = ">=1.1" },
+    { name = "h5netcdf", marker = "extra == 'nsidc'", specifier = ">=1.1" },
     { name = "h5py", specifier = ">=3.8" },
     { name = "ipympl", marker = "extra == 'interactive'", specifier = ">=0.9" },
     { name = "jupyterlab", marker = "extra == 'interactive'", specifier = ">=4.0" },
@@ -1207,7 +1213,7 @@ requires-dist = [
     { name = "xarray", specifier = ">=2023.1" },
     { name = "zarr", marker = "extra == 'lazy'", specifier = ">=2.14" },
 ]
-provides-extras = ["interactive", "shapefile", "lazy"]
+provides-extras = ["interactive", "shapefile", "lazy", "nsidc"]
 
 [[package]]
 name = "h11"
