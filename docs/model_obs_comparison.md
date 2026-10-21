@@ -274,6 +274,8 @@ FL = flowline_to_struct(xc, yc, 'name','a045_06', 'spacing',200);
 
 ## Lazy / cloud reads (Python)
 
+## Reading velocities straight from NSIDC
+
 `load_obs_netcdf` reads a whole local file into memory. For remote COG stacks, zarr datacubes
 or HTTP netCDF, use `open_obs_dataarray`. It returns a lazy (dask-backed) `DataArray`
 normalised to the toolkit's conventions: dims `(y, x, time)`, decimal-year `time` plus
